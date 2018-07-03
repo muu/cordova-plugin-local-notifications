@@ -36,7 +36,10 @@ import java.util.List;
 import java.util.Random;
 
 import de.appplant.cordova.plugin.notification.action.Action;
+import de.appplant.cordova.plugin.notification.Manager;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.O;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
 
@@ -121,6 +124,17 @@ public final class Builder {
 
         extras.putInt(Notification.EXTRA_ID, options.getId());
         extras.putString(Options.EXTRA_SOUND, sound.toString());
+
+        if (SDK_INT >= O) {
+            Manager mgr = Manager.getInstance(context);
+            if(mgr != null){
+                mgr.createOrUpdateChannel(
+                    options.getChannel(),
+                    options.getChannelName(),
+                    sound
+                );
+            }
+        }
 
         builder = findOrCreateBuilder()
                 .setDefaults(options.getDefaults())
@@ -423,7 +437,7 @@ public final class Builder {
         NotificationCompat.Builder builder = Notification.getCachedBuilder(key);
 
         if (builder == null) {
-            builder = new NotificationCompat.Builder(context, options.getChannel());
+            builder = new NotificationCompat.Builder(context);
         }
 
         return builder;

@@ -216,6 +216,13 @@ public final class Options {
     }
 
     /**
+     * The channel name of that notification.
+     */
+    CharSequence getChannelName() {
+      return options.optString("channelName", "NOTICE");
+    }
+
+    /**
      * If the group shall show a summary.
      */
     boolean getGroupSummary() {

@@ -29,6 +29,7 @@ exports._defaults = {
     autoClear     : true,
     badge         : null,
     channel       : null,
+    channelName   : null,
     clock         : true,
     color         : null,
     data          : null,

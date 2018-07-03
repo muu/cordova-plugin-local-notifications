@@ -30,6 +30,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.annotation.RequiresApi;
+import android.net.Uri;
+import android.media.AudioAttributes;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +73,7 @@ public final class Manager {
      */
     private Manager(Context context) {
         this.context = context;
-        createDefaultChannel();
+        // createDefaultChannel();
     }
 
     /**
@@ -121,6 +124,45 @@ public final class Manager {
 
         channel = new NotificationChannel(
                 CHANNEL_ID, CHANNEL_NAME, IMPORTANCE_DEFAULT);
+
+        mgr.createNotificationChannel(channel);
+    }
+
+    /**
+     * Create user channel
+     *
+     * @param channel_id   channel id
+     * @param channel_name channel name
+     * @param sound        sound
+     */
+    @RequiresApi(O)
+    public void createOrUpdateChannel(
+        String channel_id,
+        CharSequence channel_name,
+        Uri sound
+    ){
+        NotificationManager mgr = getNotMgr();
+        NotificationChannel channel = mgr.getNotificationChannel(channel_id);
+
+        if (channel != null && channel.getName().equals(channel_name)) {
+            return;
+        }
+
+        channel = new NotificationChannel(
+            channel_id,
+            channel_name,
+            IMPORTANCE_DEFAULT
+        );
+
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+            .build();
+
+        channel.setSound(null, null);
+        if (sound != Uri.EMPTY) {
+            channel.setSound(sound, audioAttributes);
+        }
 
         mgr.createNotificationChannel(channel);
     }
